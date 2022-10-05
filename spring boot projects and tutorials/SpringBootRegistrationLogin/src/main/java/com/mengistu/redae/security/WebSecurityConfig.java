@@ -15,11 +15,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.mengistu.redae.service.CustomUserDetailsService;
 
-	/*
-	In Spring Security 5.7.0-M2 the WebSecurityConfigurerAdapter is deprecated, 
-	as it is encouraged to move towards a component-based security configuration.
-	This is reason why "deprecated" warning is seen below.
-	*/
+/*
+
+    In Spring Security 5.7.0-M2 the WebSecurityConfigurerAdapter is deprecated, 
+    as it is encouraged to move towards a component-based security configuration.
+    This is reason why "deprecated" warning is seen below.
+
+*/
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
