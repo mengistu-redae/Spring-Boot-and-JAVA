@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mengistu.redae.model.User;
 import com.mengistu.redae.repositoryDAO.UserRepositoryDAO;
-import com.mengistu.redae.service.UserServices;
+import com.mengistu.redae.service.UserRegisterServices;
 
 @Controller
 public class AppController {
@@ -24,7 +24,7 @@ public class AppController {
 	private UserRepositoryDAO userRepo;
 
 	@Autowired
-	private UserServices userSrvice; // for registering a user and sending verification mail
+	private UserRegisterServices userSrvice; // for registering a user and sending verification mail
 
 	@GetMapping({"/", "/index" })
 	public String viewHomePage() {

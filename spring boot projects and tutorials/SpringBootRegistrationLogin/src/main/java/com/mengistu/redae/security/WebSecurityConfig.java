@@ -22,8 +22,15 @@ import com.mengistu.redae.service.CustomUserDetailsService;
     This is reason why "deprecated" warning is seen below.
 
 */
+
+/*
+	"@EnableWebSecurity" allows Spring to find (it's a @Configuration and @Component ) and automatically 
+	apply the class to the global WebSecurity . If I don't annotate any of my class with @EnableWebSecurity 
+	still the application prompting for username and password.
+*/
+
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity 
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -38,7 +45,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-     
+
+	/*
+	 * Authentication provider needs two things:-
+	 * 	~ UserDetailsService for fetching user details and 
+	 * 	~ password encoder for encoding user password so that it can compare it with the encoded password in the database
+	 * 
+	 */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -48,6 +61,40 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return authProvider;
     }
  
+	/*
+	 * NOTE:-
+	 * 
+	 * In any application the levels of security basically include two parts:
+	 * 	1. Authenticating - Authentication verifies the identity of a user or service. It is used for log-in functionality.
+	 * 	2. Authorizing - authorization determines their access rights. It is determining user roles after log-in.
+	 * 
+	 * So, we put our authentication and authorization configurations in objects(beans):-
+	 * 	1. Authentication object --- used for authentication configurations
+	 * 	2. HttpSecurity object --- used for authorization configurations
+	 * 
+	 * How we get these objects(beans) is using the following classes:-
+	 * 	~ AuthenticationManagerBuilder class to create the authentication object
+	 * 	~ HttpSecurity class to create the authorization object
+	 * 
+	 * principal = current user
+	 * 
+	 * The HttpSecurity object lets us to list:
+	 * 	~ all the request paths (http requests going to controllers)  
+	 * 	~ the access restrictions for each of these request paths and
+	 * 	~ the login-logout page configurations together with session and cookie catch clearing configs
+	 * 
+	 * To specify the request paths, we can use ant style path patterns if we don't want to specify each request path
+	 * 
+	 * 
+	 * The HttpSecurity uses a series of filters to apply the authorization policies by method chaining. 
+	 * The method "authorizeRequest()" opens up the chain... which is to mean like - "authorize the following 
+	 * request paths that are going to be specified"
+	 * 
+	 * Since there are many options to login(form login, LDAP login, OAuth login ...), we can call the "formLogin()" method
+	 * to specify we accept login from form which is the default one if we don't explicitly call it.
+	 * 
+	 * 	
+	*/
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
@@ -65,16 +112,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-            .antMatchers("/users").authenticated()
-            .anyRequest().permitAll()
+        http.csrf()
+				.disable() // disable CSRF for this application
+			.authorizeRequests() //Allows restricting access based upon the 
+						 //HttpServletRequest using RequestMatcher implementations (i.e. via URL patterns)
+						 //to the below chains
+            .antMatchers("/users")
+            	.authenticated() //allowed only to authenticated users with any role
+            .anyRequest()
+            	.permitAll() //any other requests including "/login" are allowed to any including none authenticated users
             .and()
-            .formLogin()
+            .formLogin()//selecting type of login i.e. login is not from LDAP or any else
                 .usernameParameter("email")
                 .defaultSuccessUrl("/users")
                 .permitAll()
             .and()
-            .logout().logoutSuccessUrl("/").permitAll();
+            .logout()
+            	.logoutSuccessUrl("/")
+            	.permitAll();
     }
-     
+    
 }

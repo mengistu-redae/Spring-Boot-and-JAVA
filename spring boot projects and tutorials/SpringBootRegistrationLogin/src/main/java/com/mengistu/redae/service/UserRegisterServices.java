@@ -17,7 +17,7 @@ import com.mengistu.redae.repositoryDAO.UserRepositoryDAO;
 import net.bytebuddy.utility.RandomString;
 
 @Service
-public class UserServices {
+public class UserRegisterServices {
 
 	@Autowired
 	private UserRepositoryDAO userRepo;
