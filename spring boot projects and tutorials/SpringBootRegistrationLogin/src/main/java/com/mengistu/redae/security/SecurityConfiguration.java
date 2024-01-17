@@ -22,13 +22,17 @@ import com.mengistu.redae.service.CustomUserDetailsService;
     In Spring Security 5.7.0-M2 the WebSecurityConfigurerAdapter is deprecated, 
     as it is encouraged to move towards a component-based security configuration.
     This is reason why "deprecated" warning is seen below.
+    
+    So, instead of extending WebSecurityConfigurerAdapter and overriding methods for 
+	configuring HttpSecurity and WebSecurity as in the old way - Now we need to declare 
+	two beans of type SecurityFilterChain and WebSecurityCustomizer.
 
 */
 
 /*
-	"@EnableWebSecurity" allows Spring to find (it's a @Configuration and @Component ) and automatically 
-	apply the class to the global WebSecurity . If I don't annotate any of my class with @EnableWebSecurity 
-	still the application prompting for username and password.
+	"@EnableWebSecurity" allows Spring to find (it's a @Configuration and @Component ) and 
+	automatically apply the class to the global WebSecurity . If we don't annotate any of 
+	our class with @EnableWebSecurity still the application prompting for username and password.
 */
 
 //@Configuration
@@ -49,13 +53,15 @@ public class SecurityConfiguration {
 	}
 
 	/*
-	 * There are many authentication manager types based on user source:- ~
-	 * DaoAuthenticationProvider ~ JDBC or LDAP authentication ~ In memory
-	 * authentication
+	 * There are many authentication manager types based on user source:- 
+	 * ~ DaoAuthenticationProvider 
+	 * ~ JDBC or LDAP authentication 
+	 * ~ In memory authentication
 	 * 
-	 * Authentication provider needs two things:- ~ UserDetailsService for fetching
-	 * user details and ~ password encoder for encoding user password so that it can
-	 * compare it with the encoded password in the database
+	 * Authentication provider(manager) needs two things:- 
+	 * ~ UserDetailsService for fetching user details and 
+	 * ~ password encoder for encoding user password so that it can
+	 *   compare it with the encoded password in the database
 	 * 
 	 */
 	@Bean
@@ -70,10 +76,11 @@ public class SecurityConfiguration {
 	/*
 	 * NOTE:-
 	 * 
-	 * In any application the levels of security basically include two parts: 1.
-	 * Authenticating - Authentication verifies the identity of a user or service.
-	 * It is used for log-in functionality. 2. Authorizing - authorization
-	 * determines their access rights. It is determining user roles after log-in.
+	 * In any application the levels of security basically include two parts: 
+	 * 1. Authenticating - Authentication verifies the identity of a user or service.
+	 *    It is used for log-in functionality. 
+	 * 2. Authorizing - authorization determines their access 
+	 *    rights. It is determining user roles after log-in.
 	 * 
 	 * So, we put our authentication and authorization configurations in
 	 * objects(beans):- 1. Authentication object --- used for authentication
@@ -136,9 +143,9 @@ public class SecurityConfiguration {
 		http.authenticationProvider(authenticationProvider()) // to authenticate, we call authentication in here
 			.csrf().disable() // disable CSRF for this application
 			.authorizeRequests() // Allows restricting access based upon the
-									// HttpServletRequest using RequestMatcher implementations (i.e. via URL
-									// patterns)
-									// to the below chains
+								 // HttpServletRequest using RequestMatcher implementations (i.e. via URL
+								 // patterns)
+								 // to the below chains
 			.antMatchers("/login").permitAll() // allow any user requesting "/login" page
 			.antMatchers("/users", "/settings/**").hasAnyRole("Admin", "USER") 
 														// or hasAnyAuthority("Admin", "Editor", "Salesperson", "Shipper")

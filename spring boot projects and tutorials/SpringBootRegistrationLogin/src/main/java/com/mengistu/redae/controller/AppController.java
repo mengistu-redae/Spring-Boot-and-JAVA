@@ -47,7 +47,7 @@ public class AppController {
 		
 		/*
 		 * we use BCryptPasswordEncoder to encode the user’s password so the password
-		 * itself it not stored in database (for better security) – only the hash value
+		 * itself is not stored in database (for better security) – only the hash value
 		 * of the password is stored.
 		 * 
 		 * 

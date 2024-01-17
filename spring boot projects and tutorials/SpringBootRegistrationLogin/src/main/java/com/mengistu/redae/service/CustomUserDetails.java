@@ -8,11 +8,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.mengistu.redae.model.User;
 
 /*
-	To implement authentication (login) feature, we need to create a class of 
-	subtype "UserDetails" (defined by Spring Security) to represent an authentication user 
+	To implement authentication (login) feature, we need to create a classes of 
+	subtypes of the interfaces "UserDetails" and "UserDetailsService" (defined by Spring Security) 
+	to represent an user authentication.
 	
 	Spring Security will invoke methods in this class during the authentication process.
+	
+"UserDetailsService" interface:
+    - Purpose: The UserDetailsService interface is responsible for retrieving user details from 
+      a data store (such as a database or an in-memory data structure) based on a username. 
+      It is a part of the Spring Security framework and is used to load user-specific data during 
+      the authentication process.
+    - Methods: The primary method in UserDetailsService is loadUserByUsername(String username), 
+      which returns a UserDetails object containing information about the user, including the 
+      user's username, password, and granted authorities.
+
+"UserDetails" interface:
+    - Purpose: The UserDetails interface represents the core user information returned by 
+      the UserDetailsService. It contains essential information about a user, such as the 
+      username, password (or a password-encoded representation), and a collection of 
+      granted authorities (roles).
+    - Methods: The UserDetails interface defines several methods, including getUsername(), 
+      getPassword(), getAuthorities(), and others.
+      
 */
+
 public class CustomUserDetails implements UserDetails{
 
 	private static final long serialVersionUID = 1L;

@@ -16,17 +16,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.mengistu.redae.service.CustomUserDetailsService;
 
 /*
-
     In Spring Security 5.7.0-M2 the WebSecurityConfigurerAdapter is deprecated, 
     as it is encouraged to move towards a component-based security configuration.
-    This is reason why "deprecated" warning is seen below.
+    This is the reason why "deprecated" warning is seen below.
+    
+    So, instead of extending WebSecurityConfigurerAdapter and overriding methods for 
+	configuring HttpSecurity and WebSecurity as in the old way - Now we need to declare 
+	two beans of type SecurityFilterChain and WebSecurityCustomizer.
 
 */
 
 /*
-	"@EnableWebSecurity" allows Spring to find (it's a @Configuration and @Component ) and automatically 
-	apply the class to the global WebSecurity . If I don't annotate any of my class with @EnableWebSecurity 
-	still the application prompting for username and password.
+	"@EnableWebSecurity" allows Spring to find (it's a @Configuration and @Component ) and 
+	automatically apply the class to the global WebSecurity . If I don't annotate any of 
+	my class with @EnableWebSecurity still the application prompting for username and password.
 */
 
 @Configuration
@@ -46,12 +49,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-	/*
-	 * Authentication provider needs two things:-
-	 * 	~ UserDetailsService for fetching user details and 
-	 * 	~ password encoder for encoding user password so that it can compare it with the encoded password in the database
+    /*
+	 * There are many authentication manager types based on user source:- 
+	 * ~ DaoAuthenticationProvider 
+	 * ~ JDBC or LDAP authentication 
+	 * ~ In memory authentication
+	 * 
+	 * Authentication provider needs two things:- 
+	 * ~ UserDetailsService for fetching user details and 
+	 * ~ password encoder for encoding user password so that it can
+	 *   compare it with the encoded password in the database
 	 * 
 	 */
+    
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -65,8 +75,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * NOTE:-
 	 * 
 	 * In any application the levels of security basically include two parts:
-	 * 	1. Authenticating - Authentication verifies the identity of a user or service. It is used for log-in functionality.
-	 * 	2. Authorizing - authorization determines their access rights. It is determining user roles after log-in.
+	 * 	1. Authenticating - Authentication verifies the identity of a 
+	 *     user or service. It is used for log-in functionality.
+	 * 	2. Authorizing - authorization determines their access 
+	 *     rights. It is determining user roles after log-in.
 	 * 
 	 * So, we put our authentication and authorization configurations in objects(beans):-
 	 * 	1. Authentication object --- used for authentication configurations
@@ -81,14 +93,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * The HttpSecurity object lets us to list:
 	 * 	~ all the request paths (http requests going to controllers)  
 	 * 	~ the access restrictions for each of these request paths and
-	 * 	~ the login-logout page configurations together with session and cookie catch clearing configs
+	 * 	~ the login-logout page configurations together with 
+	 *    session and cookie catch clearing configs
 	 * 
-	 * To specify the request paths, we can use ant style path patterns if we don't want to specify each request path
-	 * 
-	 * 
+	 * To specify the request paths, we can use ant style path 
+	 * patterns if we don't want to specify each request path
+	 *  
 	 * The HttpSecurity uses a series of filters to apply the authorization policies by method chaining. 
-	 * The method "authorizeRequest()" opens up the chain... which is to mean like - "authorize the following 
-	 * request paths that are going to be specified"
+	 * The method "authorizeRequest()" opens up the chain... which is 
+	 * to mean like - "authorize the following request paths that are going to be specified"
 	 * 
 	 * Since there are many options to login(form login, LDAP login, OAuth login ...), we can call the "formLogin()" method
 	 * to specify we accept login from form which is the default one if we don't explicitly call it.
@@ -113,7 +126,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf()
-				.disable() // disable CSRF for this application
+				.disable() // disable CSRF(Cross-Site Request Forgery attack) for this application
 			.authorizeRequests() //Allows restricting access based upon the 
 						 //HttpServletRequest using RequestMatcher implementations (i.e. via URL patterns)
 						 //to the below chains

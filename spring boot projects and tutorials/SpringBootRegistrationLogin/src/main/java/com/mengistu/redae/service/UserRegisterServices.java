@@ -37,7 +37,7 @@ public class UserRegisterServices {
 
 		String randomCode = RandomString.make(64);
 		user.setVerificationCode(randomCode);
-		user.setEnabled(false);
+		user.setEnabled(true); //when a user is registered, it should be disabled by default user.setEnabled(false);
 
 		userRepo.save(user);
 		
